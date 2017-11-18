@@ -1,0 +1,37 @@
+﻿@model PresentationLayer.Models.UserModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/_LayoutInicial.cshtml";
+}
+
+<h2>Login</h2>
+
+
+@using (Html.BeginForm(new { ReturnUrl = ViewBag.ReturnUrl }))
+{
+
+   @Html.ValidationSummary(true);
+    <div id="formulario_entrada" class="row well">
+        <div class="col-lg-6 col-lg-offset-3 ">
+
+            <fieldset>
+                <legend>Login Form</legend>
+                <p>
+                    @Html.LabelFor(m => m.UserName)
+                    @Html.TextBoxFor(m => m.UserName)
+                    @Html.ValidationMessageFor(m => m.UserName)
+                </p>              
+                <p>
+                    @Html.LabelFor(m => m.Password)
+                    @Html.PasswordFor(m => m.Password)
+                    @Html.ValidationMessageFor(m => m.Password)
+                </p>
+
+                <p>
+                    <input type="submit" value="Login" />
+                </p>
+
+            </fieldset>
+        </div>
+    </div>
+}

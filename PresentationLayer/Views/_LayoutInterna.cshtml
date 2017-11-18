@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+    <div>
+        @RenderBody()
+        @if (HttpContext.Current.Session["UserName"] == null)
+        {
+            Response.Redirect("/Login/Login");
+        }
+        <p>
+            <a href="/Login/LogOut">Sign out</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewBag.Title = "PruebaJson";
+    Layout = "~/Views/_LayoutInterna.cshtml";
+}
+
+<h2>PruebaJson</h2>
+
+<script type="text/javascript">
+
+        var usuario = '{"IdUser":0,"UserName":"Prueba7","Password":"12345","RolesList":[{"RoleName":"PAGE_2","IdRole":2}]}';
+        function CrearUsuario() {
+            $.ajax({
+                type: "POST",
+                url: "/User/CreateUser",
+                data: usuario,
+                contentType: "application/json; charset=utf-8",
+                processdata: "json",
+                success: function (result) {
+                    $("#datos").append(result + " Creardo<br>");
+                },
+                error: ServiceFailed
+            });
+        }
+
+        function ServiceFailed(xhr) {
+            // alert("FAIL" + xhr.responseText);
+            $("#datos").html(xhr.responseText);
+            if (xhr.responseText) {
+                var err = xhr.responseText;
+                if (err)
+                    error(err);
+                else
+                    error({ Message: "Unknown server error." })
+            }
+            return;
+        }
+        
+</script>
+<div>
+    <p>
+       <h3>
+           Create User
+       </h3>
+    </p>
+    <p>
+        
+    </p>
+</div>
+
+
+<div id="datos">
+
+</div>
+<script>
+        CrearUsuario();
+</script>
+
