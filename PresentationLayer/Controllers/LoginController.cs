@@ -34,7 +34,7 @@ namespace PresentationLayer.Controllers
                         switch (role)
                         {
                             case "ADMIN":
-                                return RedirectToAction("PruebaJson", "PAGE_1");
+                                return RedirectToAction("PruebasApi", "PAGE_1");
                             case "PAGE_1":                            
                                 return RedirectToAction("PAGE_1", "PAGE_1");
                             case "PAGE_2":                              

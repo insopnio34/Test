@@ -21,7 +21,7 @@ namespace PresentationLayer.Controllers
 
         }
 
-        public ActionResult PruebaJson()
+        public ActionResult PruebasApi()
         { if (Session["UserName"] == null) return RedirectToAction("Login", "Login");
             if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
             {

@@ -131,7 +131,7 @@
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\_LayoutInterna.cshtml" />
     <Content Include="Views\Login\NotAuthorized.cshtml" />
-    <Content Include="Views\PAGE_1\PruebaJson.cshtml" />
+    <Content Include="Views\PAGE_1\PruebasApi.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
