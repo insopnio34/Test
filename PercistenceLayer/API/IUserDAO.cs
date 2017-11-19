@@ -11,18 +11,18 @@ namespace PercistenceLayer.API
     {
         User GetUser(string userName,string password);
         User GetUser(string userName);
-        int CreateUser(User user);
+        bool CreateUser(User user);
         bool UpdateUser(User user);
 
         bool DeleteUser(string userName);
 
-        bool AddRole(int idUser, int idRole);
+        bool AddRole(string userName, string role);
 
-        bool DeleteRoles(int idUser);
+        bool DeleteRoles(string userName);
 
-        bool AuthorizeRole(int idUser,string role);
+        bool AuthorizeRole(string userName, string role);
 
-        List<Role> GetListRole(int idUser);
+        List<string> GetListRole(string userName);
 
         List<User> ListUsers();
 

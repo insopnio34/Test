@@ -28,14 +28,13 @@ namespace PresentationLayer.Controllers
                     User user = ServiceManager.UserServices.GetUser(model.UserName, model.Password);
                     if (user != null)
                     { 
-                        Role role = user.RolesList.First();
+                        string role = user.RolesList.First();
 
                         Session["UserName"] = user.UserName;
-                        Session["IdUser"] = user.IdUser;
-                        switch (role.RoleName)
+                        switch (role)
                         {
                             case "ADMIN":
-                                return RedirectToAction("PAGE_1", "PAGE_1");
+                                return RedirectToAction("PruebaJson", "PAGE_1");
                             case "PAGE_1":                            
                                 return RedirectToAction("PAGE_1", "PAGE_1");
                             case "PAGE_2":                              

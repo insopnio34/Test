@@ -17,9 +17,8 @@ namespace PercistenceLayer.IMPL
             try
             {
                 user = new User();
-                user.IdUser = Convert.ToInt32(rs["IdUser"].ToString());
                 user.UserName = rs["UserName"].ToString();
-                user.RolesList = GetListRole(user.IdUser);
+                user.RolesList = GetListRole(user.UserName);
             }
             catch (Exception e)
             {
@@ -116,26 +115,26 @@ namespace PercistenceLayer.IMPL
 
         }
 
-        public int CreateUser(User user)
+        public bool CreateUser(User user)
         {
             ConnectionBD db = new ConnectionBD();
             SqlConnection cnx = db.OpenDB();
-            int idUser = 0;
+            bool isCreate=false;
             try
             {             
-                string query = "INSERT INTO [dbo].[Users](UserName,Password) VALUES(@UserName,@Password);SELECT SCOPE_IDENTITY();";
+                string query = "INSERT INTO [dbo].[Users](UserName,Password) VALUES(@UserName,@Password)";
                 SqlCommand cmd = new SqlCommand(query, cnx);
                 cmd.Parameters.AddWithValue("@UserName", user.UserName);
                 cmd.Parameters.AddWithValue("@Password", user.Password);
-                string insertedID = cmd.ExecuteScalar().ToString();
-                idUser = Convert.ToInt32(insertedID);
-                if(user.RolesList!=null && user.RolesList.Count > 0)
+                cmd.ExecuteNonQuery();
+                if (user.RolesList!=null && user.RolesList.Count > 0)
                 {
-                    foreach(Role role in user.RolesList)
+                    foreach(string role in user.RolesList)
                     {
-                        AddRole(idUser,role.IdRole );
+                        AddRole(user.UserName,role);
                     }
-                }                            
+                }
+                isCreate = true;
             }
             catch(Exception e)
             {
@@ -144,7 +143,7 @@ namespace PercistenceLayer.IMPL
             finally{
                 db.CloseDB(cnx);
             }
-            return idUser;
+            return isCreate;
         }
 
         public bool UpdateUser(User user)
@@ -154,17 +153,17 @@ namespace PercistenceLayer.IMPL
             bool isSave = false;
             try
             {
-                string query = "UPDATE [dbo].[Users] SET Password = @Password WHERE UserName=@Username";
+                string query = "UPDATE [dbo].[Users] SET Password = @Password WHERE UserName=@UserName";
                 SqlCommand cmd = new SqlCommand(query, cnx);
                 cmd.Parameters.AddWithValue("@UserName", user.UserName);
                 cmd.Parameters.AddWithValue("@Password", user.Password);
                 cmd.ExecuteNonQuery();
                 if (user.RolesList != null && user.RolesList.Count > 0)
                 {
-                        DeleteRoles(user.IdUser);
-                        foreach (Role role in user.RolesList)
+                        DeleteRoles(user.UserName);
+                        foreach (string role in user.RolesList)
                         {
-                            AddRole(user.IdUser, role.IdRole);
+                            AddRole(user.UserName, role);
                         }
                 }
                     isSave = true;
@@ -186,7 +185,7 @@ namespace PercistenceLayer.IMPL
             bool isDelete = false;
             try
             {
-                string query = "DELETE FROM [dbo].[Users] WHERE UserName = @Username";
+                string query = "DELETE FROM [dbo].[Users] WHERE UserName = @UserName";
                 SqlCommand cmd = new SqlCommand(query, cnx);
                 cmd.Parameters.AddWithValue("@UserName", userName);            
                 cmd.ExecuteNonQuery();
@@ -202,17 +201,17 @@ namespace PercistenceLayer.IMPL
             }
             return isDelete;
         }
-        public bool AddRole(int idUser, int idRole)
+        public bool AddRole(string userName, string role)
         {
             ConnectionBD db = new ConnectionBD();
             SqlConnection cnx = db.OpenDB();
             bool isSave = false;
             try
             {
-                string query = "INSERT INTO [dbo].[UsersAndRoles](IdRole,IdUser) VALUES(@IdRole,@IdUser)";
+                string query = "INSERT INTO [dbo].[UsersAndRoles](Role,UserName) VALUES(@Role,@UserName)";
                 SqlCommand cmd = new SqlCommand(query, cnx);
-                cmd.Parameters.AddWithValue("@IdRole", idRole);
-                cmd.Parameters.AddWithValue("@IdUser", idUser);
+                cmd.Parameters.AddWithValue("@Role", role);
+                cmd.Parameters.AddWithValue("@UserName", userName);
                 cmd.ExecuteNonQuery();
                 isSave = true;
             }
@@ -226,16 +225,16 @@ namespace PercistenceLayer.IMPL
             }
             return isSave;
         }
-        public bool DeleteRoles(int idUser)
+        public bool DeleteRoles(string userName)
         {
             ConnectionBD db = new ConnectionBD();
             SqlConnection cnx = db.OpenDB();
             bool isDelete = false;
             try
             {
-                string query = "DELETE FROM [dbo].[Roles] WHERE IdUser=@IdUser";
+                string query = "DELETE FROM [dbo].[UsersAndRoles] WHERE UserName=@UserName";
                 SqlCommand cmd = new SqlCommand(query, cnx);
-                cmd.Parameters.AddWithValue("@IdUser", idUser);
+                cmd.Parameters.AddWithValue("@UserName", userName);
                 cmd.ExecuteNonQuery();
                 isDelete = true;
             }
@@ -249,7 +248,7 @@ namespace PercistenceLayer.IMPL
             }
             return isDelete;
         }
-        public bool AuthorizeRole(int idUser, string role)
+        public bool AuthorizeRole(string userName, string role)
         {
             bool isValid = false;
             ConnectionBD db = new ConnectionBD();
@@ -257,13 +256,10 @@ namespace PercistenceLayer.IMPL
             try
             {
                 StringBuilder query = new StringBuilder();
-                query.Append("SELECT role.IdRole from [dbo].[Users] users, ");
-                query.Append("[dbo].[Roles] role, [dbo].[UsersAndRoles] userAndRole ");
-                query.Append("where role.IdRole = userAndRole.IdRole ");
-                query.Append("and users.IdUser = userAndRole.IdUser ");
-                query.Append("and users.IdUser = @IdUser and role.Role =@Role");
+                query.Append("SELECT * from [dbo].[UsersAndRoles] ");
+                query.Append("where UserName = @UserName and Role =@Role ");
                 SqlCommand cmd = new SqlCommand(query.ToString(), cnx);
-                cmd.Parameters.AddWithValue("@IdUser", idUser);
+                cmd.Parameters.AddWithValue("@UserName", userName);
                 cmd.Parameters.AddWithValue("@Role", role);
                 SqlDataReader rs = cmd.ExecuteReader();
                 if (rs.Read())
@@ -281,25 +277,22 @@ namespace PercistenceLayer.IMPL
             }
             return isValid;
         }
-        public List<Role> GetListRole(int idUser)
+        public List<string> GetListRole(string userName)
         {      
             ConnectionBD db = new ConnectionBD();
             SqlConnection cnx = db.OpenDB();
-            List<Role> listRoles = null;
+            List<string> listRoles = null;
             try
             {
-                string query = "SELECT role.IdRole, role.Role FROM [dbo].[Roles] role,[dbo].[UsersAndRoles] userAndRole where role.IdRole = userAndRole.IdRole and userAndRole.IdUser = @IdUser";                  
+                string query = "SELECT * from [dbo].[UsersAndRoles]  where UserName = @UserName";                  
                 SqlCommand cmd = new SqlCommand(query, cnx);
-                cmd.Parameters.AddWithValue("@IdUser", idUser);
+                cmd.Parameters.AddWithValue("@UserName", userName);
                 SqlDataReader rs = cmd.ExecuteReader();
-                listRoles = new List<Role>();
-                Role role;
+                listRoles = new List<string>();
+
                 while (rs.Read())
                 {
-                    role = new Role();
-                    role.IdRole = Convert.ToInt32(rs["IdRole"].ToString());
-                    role.RoleName = rs["Role"].ToString();
-                    listRoles.Add(role);
+                    listRoles.Add(rs["Role"].ToString());
                 }
             }
             catch (Exception e)

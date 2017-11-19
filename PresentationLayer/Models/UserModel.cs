@@ -22,7 +22,7 @@ namespace PresentationLayer.Models
 
     public class CreateUserModel
     {
-      public int IdUser { get; set; }
+      public bool ExecutionIsCorrect { get; set; }
       public string Message { get; set; }
     }
 }

@@ -27,18 +27,14 @@ namespace Pruebas
             user.UserName = Console.ReadLine();
             Console.WriteLine("Password");
             user.Password = Console.ReadLine();
-
-            user.RolesList = new List<Role>();
-            Role rol = new Role(1, "ADMIN");
-            user.RolesList.Add(rol);
-
+            user.RolesList.Add("ADMIN");
             userDao.CreateUser(user);
 
             Console.WriteLine("Leer usuarios");
             List<User> users = userDao.ListUsers();
             foreach(User itemUser in users)
             {
-                Console.WriteLine("User:"+itemUser.UserName+" - "+itemUser.IdUser);
+                Console.WriteLine("User:"+itemUser.UserName+" - ");
             }
 
             Console.WriteLine("Seleccionar cualquier tecla para acabar");

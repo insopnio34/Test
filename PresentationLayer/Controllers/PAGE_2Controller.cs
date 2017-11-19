@@ -11,9 +11,8 @@ namespace PresentationLayer.Controllers
         // GET: PAGE_2
         public ActionResult PAGE_2()
         {
-            if (Session["IdUser"] == null) return RedirectToAction("Login", "Login");
-            int idUser = Convert.ToInt32(Session["IdUser"]);
-            if (!ServiceManager.UserServices.AuthorizeRole(idUser, "PAGE_2") && !ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+            if (Session["UserName"] == null) return RedirectToAction("Login", "Login");
+            if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "PAGE_2") && !ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
             {
                 return RedirectToAction("NotAuthorized", "Login");
             }

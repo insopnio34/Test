@@ -99,9 +99,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\Habitaclia.mdf" />
-    <Content Include="App_Data\Habitaclia_log.ldf">
-      <DependentUpon>Habitaclia.mdf</DependentUpon>
+    <Content Include="App_Data\TestUser.mdf" />
+    <Content Include="App_Data\TestUser_log.ldf">
+      <DependentUpon>TestUser.mdf</DependentUpon>
     </Content>
     <Content Include="Global.asax" />
     <Content Include="Web.config" />

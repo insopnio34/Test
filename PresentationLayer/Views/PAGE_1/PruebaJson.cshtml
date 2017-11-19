@@ -1,4 +1,4 @@
-﻿
+﻿@model PresentationLayer.Models.UserModel
 @{
     ViewBag.Title = "PruebaJson";
     Layout = "~/Views/_LayoutInterna.cshtml";
@@ -7,25 +7,81 @@
 <h2>PruebaJson</h2>
 
 <script type="text/javascript">
-
-        var usuario = '{"IdUser":0,"UserName":"Prueba7","Password":"12345","RolesList":[{"RoleName":"PAGE_2","IdRole":2}]}';
-        function CrearUsuario() {
+    
+    function CrearUsuario() {
+        var roles = []
+        $("input[name='rol']:checked").each(function () {
+            roles.push($(this).val());
+        });
+        var obj = { "UserName": $("#UserName").val(), "Password": $("#Password").val(), "RolesList": roles }
             $.ajax({
                 type: "POST",
                 url: "/User/CreateUser",
-                data: usuario,
+                data: JSON.stringify(obj),
                 contentType: "application/json; charset=utf-8",
                 processdata: "json",
                 success: function (result) {
-                    $("#datos").append(result + " Creardo<br>");
+                    $("#resultado").append("Create user: " + result.Message + "<br>");
+                    ListarUsuarios();
                 },
                 error: ServiceFailed
             });
-        }
+    }
+
+    function ModificarUsuario() {
+        var roles = []
+        $("input[name='rol']:checked").each(function () {
+            roles.push($(this).val());
+        });
+        var obj = { "UserName": $("#UserName").val(), "Password": $("#Password").val(), "RolesList": roles }
+        $.ajax({
+            type: "PUT",
+            url: "/User/UpdateUser",
+            data: JSON.stringify(obj),
+            contentType: "application/json; charset=utf-8",
+            processdata: "json",
+            success: function (result) {
+                $("#resultado").append("Update user:" + result.Message + "<br>");
+                ListarUsuarios();
+            },
+            error: ServiceFailed
+        });
+    }
+
+    function DeleteUsuario() {
+        var user = $("#UserName").val();
+        $.ajax({
+            type: "POST",
+            url: "/User/DeleteUser",
+            data: "userName=" + user,
+            success: function (result) {
+                $("#resultado").append("Delete user: " + result.Message + "<br>");
+                ListarUsuarios();
+            },
+            error: ServiceFailed
+        });
+    }
+
+    function ListarUsuarios() {
+        $.ajax({
+            type: "GET",
+            url: "/User/GetListUser",
+            contentType: "application/json; charset=utf-8",
+            processdata: "json",
+            success: function (result) {
+                var users="";
+                $.each(result, function(i, item) {
+                    users=users+"User name: " + item.UserName + " Roles:" + item.RolesList + "<br>";
+                })
+                $("#listaUsuarios").html(users);
+            },
+            error: ServiceFailed
+        });
+    }
 
         function ServiceFailed(xhr) {
             // alert("FAIL" + xhr.responseText);
-            $("#datos").html(xhr.responseText);
+            $("#resultado").html(xhr.responseText);
             if (xhr.responseText) {
                 var err = xhr.responseText;
                 if (err)
@@ -35,24 +91,40 @@
             }
             return;
         }
-        
+        $(document).ready(function () {
+            ListarUsuarios();
+        });
 </script>
-<div>
-    <p>
-       <h3>
-           Create User
-       </h3>
-    </p>
-    <p>
-        
-    </p>
+
+<div class="col-lg-6 col-lg-offset-3 ">
+    <fieldset>
+        <legend>User form</legend>
+        <p>
+            @Html.LabelFor(m => m.UserName)
+            @Html.TextBoxFor(m => m.UserName)
+        </p>
+        <p>
+            @Html.LabelFor(m => m.Password)
+            @Html.PasswordFor(m => m.Password)
+        </p>
+        <p>
+            <input id="admin"  name="rol" value="ADMIN" type="checkbox" />ADMIN &nbsp;
+            <input id="page1" name="rol" value="PAGE_1" type="checkbox" />PAGE_1&nbsp;
+            <input id="page1" name="rol" value="PAGE_2" type="checkbox" />PAGE_2&nbsp;
+            <input id="page1" name="rol" value="PAGE_3" type="checkbox" />PAGE_
+        </p>
+        <p>
+            <input type="button" value="Create user" onclick="CrearUsuario()" />&nbsp;
+            <input type="button" value="Update user" onclick="ModificarUsuario()" />&nbsp;
+            <input type="button" value="Delete user" onclick="DeleteUsuario()" />&nbsp;
+            <input type="button" value="List users" onclick="ListarUsuarios()" />&nbsp;
+        </p>
+
+    </fieldset>
 </div>
+<h5>Result Operations</h5>
+<div id="resultado" class="row"></div>
+<h5>List users</h5>
+<div id="listaUsuarios" class="row"></div>
 
-
-<div id="datos">
-
-</div>
-<script>
-        CrearUsuario();
-</script>
 

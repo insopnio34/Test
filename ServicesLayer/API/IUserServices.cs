@@ -11,10 +11,10 @@ namespace ServicesLayer.API
     {
         User GetUser(string userName, string password);
         User GetUser(string userName);
-        int CreateUser(User user);
+        bool CreateUser(User user);
         bool UpdateUser(User user);
         bool DeleteUser(string userName);
         List<User> ListUsers();
-        bool AuthorizeRole(int idUser, string role);
+        bool AuthorizeRole(string userName, string role);
     }
 }

@@ -12,9 +12,8 @@ namespace PresentationLayer.Controllers
         public ActionResult PAGE_1()
         {
 
-            if (Session["IdUser"] == null) return RedirectToAction("Login", "Login");
-            int idUser = Convert.ToInt32(Session["IdUser"]);
-            if (!ServiceManager.UserServices.AuthorizeRole(idUser, "PAGE_1") && !ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+            if (Session["UserName"] == null) return RedirectToAction("Login", "Login");
+            if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "PAGE_1") && !ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
             {
                 return RedirectToAction("NotAuthorized", "Login");
             }
@@ -23,7 +22,11 @@ namespace PresentationLayer.Controllers
         }
 
         public ActionResult PruebaJson()
-        {
+        { if (Session["UserName"] == null) return RedirectToAction("Login", "Login");
+            if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
+            {
+                return RedirectToAction("NotAuthorized", "Login");
+            }
             return View();
         }
     }

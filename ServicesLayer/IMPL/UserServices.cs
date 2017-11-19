@@ -6,21 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using BusinnesLayer;
 using PercistenceLayer.IMPL;
+using System.Data.SqlClient;
 
 namespace ServicesLayer.IMPL
 {
     public class UserServices : IUserServices
     {
-        public bool AuthorizeRole(int idUser, string role)
+        public bool AuthorizeRole(string userName, string role)
         {
             UserDAO userDao = new UserDAO();
-            return userDao.AuthorizeRole(idUser, role);
+            return userDao.AuthorizeRole(userName, role);
         }
 
-        public int CreateUser(User user)
-        { 
-            UserDAO userDao = new UserDAO();
-            return userDao.CreateUser(user);
+        public bool CreateUser(User user)
+        {
+                UserDAO userDao = new UserDAO();
+                return userDao.CreateUser(user);
+            
         }
 
         public bool DeleteUser(string userName)

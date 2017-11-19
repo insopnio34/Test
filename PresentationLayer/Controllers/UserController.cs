@@ -18,8 +18,7 @@ namespace PresentationLayer.Controllers
         {
             try{
                 if (Session["UserName"] == null) Response.Redirect("/Login/Login");
-                int idUser = Convert.ToInt32(Session["IdUser"]);
-                if (!ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+                if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
                 {
                     var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Not authorized to access" };
                     return Json(msg, JsonRequestBehavior.AllowGet);
@@ -41,8 +40,7 @@ namespace PresentationLayer.Controllers
             try
             {
                 if (Session["UserName"] == null) Response.Redirect("/Login/Login");
-                int idUser = Convert.ToInt32(Session["IdUser"]);
-                if (!ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+                if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
                 {
                     var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Not authorized to access" };
                     return Json(msg, JsonRequestBehavior.DenyGet);
@@ -52,13 +50,13 @@ namespace PresentationLayer.Controllers
                 User userAct = ServiceManager.UserServices.GetUser(user.UserName);
                 if (userAct== null)
                 {
-                    int id = ServiceManager.UserServices.CreateUser(user);
-                    message.IdUser = id;
+                    bool isCreate = ServiceManager.UserServices.CreateUser(user);
+                    message.ExecutionIsCorrect =isCreate;
                     message.Message = "Save user";
                 }
                 else
                 {
-                    message.IdUser = 0;
+                    message.ExecutionIsCorrect = false;
                     message.Message = "The user already exists in the system";
                 }              
                 return Json(message, JsonRequestBehavior.DenyGet);
@@ -77,8 +75,7 @@ namespace PresentationLayer.Controllers
             try
             {
                 if (Session["UserName"] == null) Response.Redirect("/Login/Login");
-                int idUser = Convert.ToInt32(Session["IdUser"]);
-                if (!ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+                if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
                 {
                     var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Not authorized to access" };
                     return Json(msg, JsonRequestBehavior.DenyGet);
@@ -88,13 +85,13 @@ namespace PresentationLayer.Controllers
                 User userAct = ServiceManager.UserServices.GetUser(user.UserName);
                 if (userAct == null)
                 {
-                    message.IdUser = 0;
+                    message.ExecutionIsCorrect = false;
                     message.Message = "The user not exists in the system";
                 }
                 else
                 {
                     bool isCorrect = ServiceManager.UserServices.UpdateUser(user);
-                    message.IdUser = 0;
+                    message.ExecutionIsCorrect = isCorrect;
                     message.Message = "Save user";
                 }
                 return Json(message, JsonRequestBehavior.DenyGet);
@@ -106,14 +103,13 @@ namespace PresentationLayer.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         public JsonResult DeleteUser(string userName)
         {
             try
             {
                 if (Session["UserName"] == null) Response.Redirect("/Login/Login");
-                int idUser = Convert.ToInt32(Session["IdUser"]);
-                if (!ServiceManager.UserServices.AuthorizeRole(idUser, "ADMIN"))
+                if (!ServiceManager.UserServices.AuthorizeRole(Session["UserName"].ToString(), "ADMIN"))
                 {
                     var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Not authorized to access" };
                     return Json(msg, JsonRequestBehavior.DenyGet);
@@ -123,13 +119,13 @@ namespace PresentationLayer.Controllers
                 User userAct = ServiceManager.UserServices.GetUser(userName);
                 if (userAct == null)
                 {
-                    message.IdUser = 0;
+                    message.ExecutionIsCorrect = false;
                     message.Message = "The user not exists in the system";
                 }
                 else
                 {
                     bool isCorrect = ServiceManager.UserServices.DeleteUser(userName);
-                    message.IdUser = 0;
+                    message.ExecutionIsCorrect = isCorrect;
                     message.Message = "Delete user";
                 }
                 return Json(message, JsonRequestBehavior.DenyGet);
